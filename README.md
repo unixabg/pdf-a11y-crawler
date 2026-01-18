@@ -57,7 +57,7 @@ This tool provides **signal**, not legal or accessibility certification.
 ### 🔹 Clone from GitHub
 
 ```bash
-git clone https://github.com/<your-username>/pdf-a11y-crawler.git
+git clone https://github.com/unixabg/pdf-a11y-crawler.git
 cd pdf-a11y-crawler
 ```
 
