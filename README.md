@@ -183,6 +183,44 @@ deactivate
 ./pdf-a11y-crawl.py --verapdf https://example.com
 ```
 
+### See help for more usage options
+```bash
+./pdf-a11y-crawl.py --help
+usage: pdf-a11y-crawl [-h] [--dry-run] [--include-external-pdfs] [--max-bytes MAX_BYTES] [--max-pages MAX_PAGES] [--out OUT] [--recursive]
+                      [--timeout TIMEOUT] [--verapdf] [--version]
+                      url
+
+Crawl a web page and identify PDF files, then analyze them for basic accessibility characteristics such as text presence (image-only detection) and optional PDF/UA checks.
+
+positional arguments:
+  url                   Starting URL to scan for PDF links
+
+options:
+  -h, --help            show this help message and exit
+  --dry-run             Discover PDFs but do not download or analyze them
+  --include-external-pdfs
+                        Also scan PDFs hosted on external domains
+  --max-bytes MAX_BYTES
+                        Maximum size of a PDF in bytes (default: 50MB)
+  --max-pages MAX_PAGES
+                        Maximum number of pages to crawl when using --recursive (default: 200)
+  --out OUT             Output directory (default: ./out)
+  --recursive           Follow links on the same site (default: off)
+  --timeout TIMEOUT     HTTP timeout in seconds (default: 20)
+  --verapdf             Run veraPDF to check PDF/UA compliance (slower)
+  --version             show program's version number and exit
+
+Examples:
+  pdf-a11y-crawl https://example.com/page
+  pdf-a11y-crawl --recursive https://example.com
+  pdf-a11y-crawl --verapdf https://example.com/docs
+
+Notes:
+  - By default, only the given page is scanned.
+  - --recursive enables crawling of linked pages.
+  - --verapdf enables PDF/UA checks (optional, slower).
+```
+
 ---
 
 ## 📊 Output
