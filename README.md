@@ -52,9 +52,36 @@ This tool provides **signal**, not legal or accessibility certification.
 
 ---
 
-## 📥 Download
+## 🛠 Setup (Debian Trixie)
 
-### 🔹 Clone from GitHub
+This section describes how to install and run **pdf-a11y-crawler** on **Debian Trixie** using a Python virtual environment.
+
+---
+
+### 1️⃣ Install System Dependencies
+
+Update package lists:
+
+```bash
+sudo apt update
+```
+
+Install required packages:
+
+```bash
+sudo apt install -y \
+    python3 \
+    python3-venv \
+    python3-pip \
+    poppler-utils \
+    curl
+```
+
+> `poppler-utils` provides `pdffonts`, which is required for detecting text in PDFs.
+
+---
+
+### 2️⃣ Clone the Repository
 
 ```bash
 git clone https://github.com/unixabg/pdf-a11y-crawler.git
@@ -63,20 +90,74 @@ cd pdf-a11y-crawler
 
 ---
 
-## 🧰 Requirements
+### 3️⃣ Create and Activate a Python Virtual Environment
 
-- Python 3.9+
-- `poppler-utils` (for `pdffonts`)
-- Optional: `veraPDF` (for PDF/UA checks)
-
-### Debian / Ubuntu
 ```bash
-sudo apt install poppler-utils
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-### veraPDF (optional)
+You should now see:
+
+```text
+(venv) user@host:~/pdf-a11y-crawler$
+```
+
+---
+
+### 4️⃣ Install Python Dependencies
+
+```bash
+pip install requests beautifulsoup4 tqdm
+```
+
+---
+
+### 5️⃣ Make the Script Executable
+
+```bash
+chmod +x pdf-a11y-crawl.py
+```
+
+---
+
+### 6️⃣ Verify Installation
+
+```bash
+./pdf-a11y-crawl.py --version
+```
+
+Expected output:
+
+```text
+pdf-a11y-crawler 0.1.0
+```
+
+---
+
+### 7️⃣ Optional: Install veraPDF (for PDF/UA checks)
+
+veraPDF is optional and only required if you use `--verapdf`.
+
 Download from:
+
+```
 https://verapdf.org/software/
+```
+
+Once installed verify veraPDF installation:
+
+```bash
+verapdf --version
+```
+
+---
+
+###  8️⃣ Deactivate Environment (optional)
+
+```bash
+deactivate
+```
 
 ---
 
