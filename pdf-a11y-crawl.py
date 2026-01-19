@@ -31,6 +31,12 @@ class PdfResult:
     sha256: str | None
     has_text_layer: bool | None          # True if fonts found via pdffonts
     fonts_count: int | None
+    pdftotext_ran: bool
+    pdftotext_ok: bool | None
+    pdftotext_output: str | None
+    pdftotext_bytes: int | None
+    pdftotext_chars: int | None
+    text_density: float | None
     verapdf_ran: bool
     verapdf_passed: bool | None
     notes: str | None
@@ -96,6 +102,24 @@ def run_pdffonts(pdf_path: Path) -> tuple[bool, int, str | None]:
         return (None, None, f"pdffonts exception: {e}")  # type: ignore
 
 
+def run_pdftotext(pdf_path: Path, out_txt: Path, timeout: int = 120):
+    if shutil.which("pdftotext") is None:
+        return False, "pdftotext not installed"
+
+    try:
+        p = subprocess.run(
+            ["pdftotext", "-layout", "-enc", "UTF-8", str(pdf_path), str(out_txt)],
+            capture_output=True,
+            text=True,
+            timeout=timeout
+        )
+        if p.returncode != 0:
+            return False, p.stderr.strip()
+        return True, None
+    except Exception as e:
+        return False, str(e)
+
+
 def run_verapdf(pdf_path: Path) -> tuple[bool, bool | None, str | None]:
     """
     Returns: (ran, passed?, note)
@@ -107,7 +131,7 @@ def run_verapdf(pdf_path: Path) -> tuple[bool, bool | None, str | None]:
 
     try:
         p = subprocess.run(
-            ["verapdf", "--format", "text", str(pdf_path)],
+            ["verapdf", "--flavour", "ua1", "--format", "text", str(pdf_path)],
             capture_output=True,
             text=True,
             timeout=120,
@@ -201,6 +225,7 @@ def crawl(
     out_dir: Path,
     include_external_pdfs: bool,
     run_vera: bool,
+    pdftotext: bool,
     dry_run=False,
 ) -> list[PdfResult]:
     session = requests.Session()
@@ -246,6 +271,12 @@ def crawl(
                                 sha256=None,
                                 has_text_layer=None,
                                 fonts_count=None,
+                                pdftotext_ran=False,
+                                pdftotext_ok=None,
+                                pdftotext_output=None,
+                                pdftotext_bytes=None,
+                                pdftotext_chars=None,
+                                text_density=None,
                                 verapdf_ran=False,
                                 verapdf_passed=None,
                                 notes="dry-run (not downloaded)"
@@ -274,6 +305,34 @@ def crawl(
                     if pdffonts_note:
                         note = (note + "; " if note else "") + pdffonts_note
 
+                    pdftotext_ran = False
+                    pdftotext_ok = None
+                    pdftotext_output = None
+                    
+                    # Optional: extract text for review
+                    if pdftotext and has_text_layer and pdf_path.exists():
+                        pdftotext_ran = True
+                        txt_path = pdf_path.with_suffix(".pdftotext.txt")
+                        ok, err = run_pdftotext(pdf_path, txt_path)
+                        pdftotext_ok = ok
+                        pdftotext_output = str(txt_path) if ok else None
+                        if not ok:
+                            note = (note + "; " if note else "") + f"pdftotext failed: {err}"
+
+                    pdftotext_bytes = None
+                    pdftotext_chars = None
+                    text_density = None
+
+                    if pdftotext_ok and pdftotext_output and dl_bytes:
+                        txt_p = Path(pdftotext_output)
+                        try:
+                            data = txt_p.read_text(encoding="utf-8", errors="replace")
+                            pdftotext_chars = len(data)
+                            pdftotext_bytes = len(data.encode("utf-8", errors="replace"))
+                            text_density = pdftotext_bytes / dl_bytes if dl_bytes else None
+                        except Exception as e:
+                            note = (note + "; " if note else "") + f"pdftotext read failed: {e}"
+
                     ver_ran = False
                     ver_passed = None
                     if run_vera:
@@ -291,6 +350,12 @@ def crawl(
                             sha256=sha256,
                             has_text_layer=has_text_layer,
                             fonts_count=fonts_count,
+                            pdftotext_ran=pdftotext_ran,
+                            pdftotext_ok=pdftotext_ok,
+                            pdftotext_output=pdftotext_output,
+                            pdftotext_bytes=pdftotext_bytes,
+                            pdftotext_chars=pdftotext_chars,
+                            text_density=text_density,
                             verapdf_ran=ver_ran,
                             verapdf_passed=ver_passed,
                             notes=note
@@ -393,6 +458,12 @@ def main():
     )
 
     ap.add_argument(
+        "--pdftotext",
+        action="store_true",
+        help="Dump extracted text for review when text layer is detected"
+    )
+
+    ap.add_argument(
         "--recursive",
         action="store_true",
         help="Follow links on the same site (default: off)"
@@ -431,6 +502,7 @@ def main():
         out_dir=out_dir,
         include_external_pdfs=args.include_external_pdfs,
         run_vera=args.verapdf,
+        pdftotext=args.pdftotext,
         dry_run=args.dry_run,
     )
 

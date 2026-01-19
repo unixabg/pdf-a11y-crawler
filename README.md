@@ -186,8 +186,8 @@ deactivate
 ### See help for more usage options
 ```bash
 ./pdf-a11y-crawl.py --help
-usage: pdf-a11y-crawl [-h] [--dry-run] [--include-external-pdfs] [--max-bytes MAX_BYTES] [--max-pages MAX_PAGES] [--out OUT] [--recursive]
-                      [--timeout TIMEOUT] [--verapdf] [--version]
+usage: pdf-a11y-crawl [-h] [--dry-run] [--include-external-pdfs] [--max-bytes MAX_BYTES] [--max-pages MAX_PAGES] [--out OUT] [--pdftotext]
+                       [--recursive] [--timeout TIMEOUT] [--verapdf] [--version]
                       url
 
 Crawl a web page and identify PDF files, then analyze them for basic accessibility characteristics such as text presence (image-only detection) and optional PDF/UA checks.
@@ -205,6 +205,7 @@ options:
   --max-pages MAX_PAGES
                         Maximum number of pages to crawl when using --recursive (default: 200)
   --out OUT             Output directory (default: ./out)
+  --pdftotext           Dump extracted text for review when text layer is detected
   --recursive           Follow links on the same site (default: off)
   --timeout TIMEOUT     HTTP timeout in seconds (default: 20)
   --verapdf             Run veraPDF to check PDF/UA compliance (slower)
