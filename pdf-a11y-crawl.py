@@ -16,7 +16,7 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 
 PDF_RE = re.compile(r"\.pdf(\?|#|$)", re.IGNORECASE)
 
