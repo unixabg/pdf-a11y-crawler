@@ -284,7 +284,7 @@ Do not use this tool to scan:
 Current version:
 
 ```
-0.1.0
+0.1.2
 ```
 
 ---
