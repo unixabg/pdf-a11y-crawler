@@ -289,6 +289,24 @@ Current version:
 
 ---
 
+## 🩺 Remediation & Accessibility Resources
+
+This project is intended to help identify accessibility issues in PDFs and support efforts toward WCAG 2.1 and PDF/UA compliance. While this tool focuses on detection and analysis, remediation often requires specialized tooling and expertise.
+
+### PDFix
+[PDFix](https://pdfix.net/) provides professional-grade tools for PDF accessibility remediation and validation. Their SDK and desktop tools can help:
+
+- Fix tagged PDF structure
+- Remediate reading order and semantics
+- Validate PDF/UA compliance
+- Improve compatibility with screen readers
+
+PDFix is a useful resource for teams looking to move from automated analysis toward fully accessible, standards-compliant PDFs.
+
+> Mentioned with permission from the PDFix team.
+
+---
+
 ## 🙌 Contributions
 
 Suggestions, improvements, and issues are welcome.
